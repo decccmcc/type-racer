@@ -67,3 +67,58 @@ main.container{padding-top:1rem}
 	font-weight:600;
 }
 
+/* Main test area layout */
+.test-grid{margin-top:1rem}
+.test-area{padding:0.5rem}
+
+/* Prompt box styling to match design */
+.prompt-box{
+	background:#fff;
+	border:1px solid #e6e6e6;
+	color:#111827;
+	border-radius:4px;
+	font-size:0.95rem;
+}
+
+/* Typing textarea */
+#typing-area{
+	border:1px solid #e6e6e6;
+	border-radius:4px;
+	resize:vertical;
+}
+
+/* Control buttons styling similar to design */
+#start-btn, #stop-btn, #retry-btn{
+	border-radius:6px;
+	border:2px solid var(--accent);
+	background:transparent;
+	color:var(--accent);
+	padding:0.4rem 0.9rem;
+	font-weight:600;
+}
+#start-btn:hover, #stop-btn:hover, #retry-btn:hover{
+	background:var(--accent);
+	color:#fff;
+}
+
+/* Results card styling (orange-tinted border & subtle shadow) */
+.results-card{
+	border-radius:10px;
+	border: 1px solid rgba(255,140,0,0.25);
+	box-shadow: 0 6px 18px rgba(255,140,0,0.12);
+}
+.results-card .card-body{padding:1.25rem}
+.results-item{font-size:0.95rem; color:#374151; margin-bottom:0.5rem}
+
+/* Align the results card to the top on larger screens */
+@media(min-width:768px){
+	.results-area{display:flex; align-items:flex-start; height:100%}
+	.results-area .results-card{width:100%}
+}
+
+/* Narrow the container max-width for a similar layout to the image */
+@media(min-width:992px){
+	.container{max-width:1100px}
+}
+
+
