@@ -26,6 +26,16 @@
                 <!-- Left: typing/test area (full width on small, 8/12 on md+) -->
                 <div class="col-12 col-md-8">
                     <div class="test-area">
+                        <!-- Difficulty dropdown (Bootstrap input-group) -->
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="difficulty-label">Select Difficulty</span>
+                            <select class="form-select" id="difficulty" aria-label="Select difficulty" aria-describedby="difficulty-label">
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+
                         <!-- Left column content will be built here (prompt, typing input, controls) -->
                     </div>
                 </div>
