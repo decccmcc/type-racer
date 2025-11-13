@@ -20,7 +20,24 @@
     </header>
 
     <main class="container mt-4">
-        <!-- Typing area and game UI will be added here -->
+        <!-- Basic responsive grid: stacks on small screens, 2/3 + 1/3 from md up -->
+        <section class="test-grid">
+            <div class="row">
+                <!-- Left: typing/test area (full width on small, 8/12 on md+) -->
+                <div class="col-12 col-md-8">
+                    <div class="test-area">
+                        <!-- Left column content will be built here (prompt, typing input, controls) -->
+                    </div>
+                </div>
+
+                <!-- Right: results area (full width on small, 4/12 on md+) -->
+                <div class="col-12 col-md-4">
+                    <aside class="results-area">
+                        <!-- Results card will be added here -->
+                    </aside>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Bootstrap -->
