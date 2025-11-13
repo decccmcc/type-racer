@@ -36,7 +36,23 @@
                             </select>
                         </div>
 
-                        <!-- Left column content will be built here (prompt, typing input, controls) -->
+                        <!-- Heading matching the image -->
+                        <h2 class="prompt-heading">Test your typing speed by typing the text shown below:</h2>
+
+                        <!-- Sample prompt text -->
+                        <div class="prompt-box mb-3 p-3 bg-light border rounded">
+                            The quick brown fox jumps over the lazy dog. Practice sentences help you warm up and test typing speed.
+                        </div>
+
+                        <!-- Typing input area -->
+                        <textarea id="typing-area" class="form-control mb-3" rows="6" placeholder="Type the text above here..." aria-label="Typing input"></textarea>
+
+                        <!-- Controls: Start / Stop / Retry -->
+                        <div class="d-flex gap-2">
+                            <button id="start-btn" class="btn btn-primary">Start</button>
+                            <button id="stop-btn" class="btn btn-secondary">Stop</button>
+                            <button id="retry-btn" class="btn btn-outline-secondary">Retry</button>
+                        </div>
                     </div>
                 </div>
 
