@@ -1,1 +1,60 @@
-@import url("https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&family= Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Alegreya:wght@700&family=Nunito:wght@400;700&display=swap');
+
+:root{
+	--accent: #ff8c00; /* orange matching the design */
+	--header-height: 120px;
+	--header-color: #ffffff;
+}
+
+html,body{height:100%;}
+body{margin:0; font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, Arial; background:#fff; color:#111}
+
+/* Centered orange header */
+.site-header{
+	width:100%;
+	background: var(--accent);
+	color: var(--header-color);
+	box-shadow: 0 2px 0 rgba(0,0,0,0.04);
+}
+.header-content{
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	justify-content:center;
+	text-align:center;
+	padding: 1.5rem 1rem;
+}
+.site-title{
+	margin:0 0 0.75rem 0;
+	font-family: 'Alegreya', serif;
+	font-weight:700;
+	font-size:1.85rem;
+	color:var(--header-color);
+}
+
+.instr-btn{
+	background:#ffffff;
+	color:var(--accent);
+	border: none;
+	padding:0.5rem 1rem;
+	border-radius:6px;
+	box-shadow: 0 6px 18px rgba(255,140,0,0.12);
+	font-weight:600;
+}
+.instr-btn:hover{transform:translateY(-2px)}
+.instr-btn:focus{outline:3px solid rgba(255,140,0,0.16); outline-offset:3px}
+
+/* Layout spacing so the main content doesn't butt up to the header */
+main.container{padding-top:1rem}
+
+/* Responsive adjustments */
+@media (min-width: 768px){
+	:root{--header-height:140px}
+	.header-content{padding:2.25rem 1rem}
+	.site-title{font-size:2.25rem}
+}
+
+@media (max-width:420px){
+	.site-title{font-size:1.5rem}
+	.instr-btn{padding:0.45rem 0.9rem}
+}
