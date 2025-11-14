@@ -15,7 +15,12 @@
     <header class="site-header">
         <div class="header-content container">
             <h1 class="site-title">TypeRacer</h1>
-            <button id="instructions-button" class="btn instr-btn" aria-label="Show instructions">Instructions</button>
+            <button id="instructions-button" class="btn instr-btn"
+                aria-label="Show instructions"
+                data-bs-toggle="modal"
+                data-bs-target="#instructionsModal">
+                Instructions
+            </button>
         </div>
     </header>
 
@@ -83,6 +88,37 @@
     <script src="https://kit.fontawesome.com/e0f9b143b7.js" crossorigin="anonymous"></script>
     <!-- App script -->
     <script src="assets/js/main.js"></script>
-</body>
 
+    <!-- Instructions Modal -->
+    <div class="modal fade" id="instructionsModal" tabindex="-1" aria-labelledby="instructionsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="instructionsModalLabel">How to take the typing test</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>This test measures your typing speed and accuracy. Follow these steps:</p>
+            <ol>
+              <li><strong>Select a difficulty</strong> from the dropdown (Easy / Medium / Hard).</li>
+              <li><strong>Start typing</strong> into the text area. The test automatically starts on your first keystroke.</li>
+              <li><strong>Live feedback:</strong> Each word in the sample turns <span style="color:blue">blue</span> when typed correctly and <span style="color:red">red</span> when incorrect.</li>
+              <li><strong>Finish the test</strong> by pressing the Enter key. This will stop the timer and display your results.</li>
+              <li><strong>Results displayed:</strong> Level, Time (seconds, rounded to two decimals), and WPM (rounded to a whole number).</li>
+              <li><strong>Retry:</strong> Click the "Retry" button to load a new sample at the same difficulty. Retry clears the input, enables typing, resets results, and disables the Retry button until the next completion.</li>
+            </ol>
+            <p>Accessibility & tips:</p>
+            <ul>
+              <li>The test area is keyboard-focused when you begin typing.</li>
+              <li>Pressing Enter prevents a newline and ends the test to produce your final score.</li>
+              <li>If you change difficulty, a new sample is loaded and results are reset.</li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</body>
 </html>
