@@ -131,7 +131,7 @@
 
     // Clear typing area when test starts and enable input
     if(typingArea){
-      typingArea.value = '';       // clear any existing text
+      // Do NOT clear the textarea here — tests start when the user types
       typingArea.disabled = false; // enable while running
       typingArea.focus();
       // Reset live colouring when a test starts
@@ -150,11 +150,21 @@
     if(resLevel && difficultySelect) resLevel.textContent = (difficultySelect.value || 'easy').replace(/^\w/, c => c.toUpperCase());
   }
 
+  // Start the test when the user begins typing (only once)
+  function startTestIfNeeded(){
+    if(testStartTimestamp === null){
+      startTest();
+    }
+  }
+
   function stopTest(){
     if(testStartTimestamp === null) return; // nothing to stop
     const elapsedMs = performance.now() - testStartTimestamp;
     const seconds = +(elapsedMs / 1000).toFixed(2);
     if(resTimeSpan) resTimeSpan.textContent = seconds + 's';
+
+    // show final colors before computing WPM
+    updateWordColors();
 
     // Calculate WPM by comparing user words to sample words positionally
     const wpm = calculateWPM(seconds);
@@ -180,8 +190,26 @@
   
   // Initialize on DOM ready
   document.addEventListener('DOMContentLoaded', function(){
-    // Live update as the user types
-    if(typingArea) typingArea.addEventListener('input', updateWordColors);
+    // Live update as the user types; start test on first input
+    if(typingArea){
+      // Enable typing area so users can start typing to begin the test
+      typingArea.disabled = false;
+      typingArea.placeholder = 'Start typing to begin the test';
+      // on input: start test if needed, then update colours
+      typingArea.addEventListener('input', function(evt){
+        startTestIfNeeded();
+        updateWordColors();
+      });
+      // on Enter key: stop the test (prevent newline)
+      typingArea.addEventListener('keydown', function(evt){
+        if(evt.key === 'Enter'){
+          // If the test has not started yet, ignore Enter
+          if(testStartTimestamp === null) return;
+          evt.preventDefault();
+          stopTest();
+        }
+      });
+    }
 
     // Initial pick based on current select value
     if(difficultySelect){
@@ -209,8 +237,9 @@
     if(startBtn) startBtn.disabled = false;
     if(stopBtn) stopBtn.disabled = true;
 
-    // Ensure typing area is disabled until test starts
-    if(typingArea) typingArea.disabled = true;
+    // Replace the Start/Stop buttons UI: hide them because tests start on typing and end on Enter
+    if(startBtn) startBtn.style.display = 'none';
+    if(stopBtn) stopBtn.style.display = 'none';
 
     // ensure results initial values match UI
     const resLevelInit = document.getElementById('res-level');
@@ -218,8 +247,7 @@
     if(resWpmSpan) resWpmSpan.textContent = '0';
 
     // attach named handlers
-    if(startBtn) startBtn.addEventListener('click', startTest);
-    if(stopBtn) stopBtn.addEventListener('click', stopTest);
+    // Keep retry button as-is (if present) — start/stop are handled by typing and Enter.
   });
 
 })();
