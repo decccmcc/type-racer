@@ -93,10 +93,16 @@
     const text = randomFrom(bucket);
     // Render the prompt as word spans so we can colour individual words
     renderPromptAsSpans(text);
-    // Clear typing area when a new prompt is chosen
+
+    // Clear typing area when a new prompt is chosen and ensure user can start typing
     if(typingArea){
       typingArea.value = '';
-      // ensure colours are reset when prompt changes
+      typingArea.disabled = false;    // << enable input so user can start typing after difficulty change
+      typingArea.placeholder = 'Start typing to begin the test';
+      // reset test run state when a new prompt is selected
+      testStartTimestamp = null;
+      // reset results display and colours
+      resetResultsDisplay();
       updateWordColors();
     }
   }
@@ -104,7 +110,42 @@
   // --- Timing logic: named functions for clarity ---
   let startBtn, stopBtn, resTimeSpan;
   let resWpmSpan;
+  let retryBtn;
   let testStartTimestamp = null;
+  
+  // Reset the Results area display
+  function resetResultsDisplay(){
+    if(resTimeSpan) resTimeSpan.textContent = '0s';
+    if(resWpmSpan) resWpmSpan.textContent = '0';
+    const resLevel = document.getElementById('res-level');
+    if(resLevel && difficultySelect) resLevel.textContent = (difficultySelect.value || 'easy').replace(/^\w/, c => c.toUpperCase());
+  }
+
+  // Retry handler: load a new sample at the same difficulty, clear & enable input, reset results and disable retry
+  function retryTest(){
+    const level = difficultySelect ? difficultySelect.value : 'easy';
+    // Load a new sample sentence of the same difficulty
+    chooseAndDisplay(level);
+
+    // Clear and enable the typing area so the user can start typing
+    if(typingArea){
+      typingArea.value = '';
+      typingArea.disabled = false;
+      typingArea.focus();
+    }
+
+    // Reset the results display
+    resetResultsDisplay();
+
+    // Disable the retry button until the test finishes again
+    if(retryBtn) retryBtn.disabled = true;
+
+    // Ensure no test is currently running
+    testStartTimestamp = null;
+
+    // Reset live colours for the new prompt
+    updateWordColors();
+  }
 
   // Calculate WPM based on positional word matches (uses promptBox and typingArea)
   function calculateWPM(timeTaken){
@@ -128,6 +169,7 @@
   function startTest(){
     // record high-resolution start time
     testStartTimestamp = performance.now();
+    if(retryBtn) retryBtn.disabled = true;
 
     // Clear typing area when test starts and enable input
     if(typingArea){
@@ -162,6 +204,9 @@
     const elapsedMs = performance.now() - testStartTimestamp;
     const seconds = +(elapsedMs / 1000).toFixed(2);
     if(resTimeSpan) resTimeSpan.textContent = seconds + 's';
+    
+    // enable the retry button now that the test has completed
+    if(retryBtn) retryBtn.disabled = false;
 
     // show final colors before computing WPM
     updateWordColors();
@@ -217,6 +262,7 @@
 
       // Update when the user changes difficulty
       difficultySelect.addEventListener('change', function(e){
+        // choose a new prompt and ensure user can type immediately
         chooseAndDisplay(e.target.value);
         // also update displayed level in results area if present
         const resLevel = document.getElementById('res-level');
@@ -230,6 +276,7 @@
     // Hook up control buttons and result span
     startBtn = document.getElementById('start-btn');
     stopBtn = document.getElementById('stop-btn');
+    retryBtn = document.getElementById('retry-btn'); // << ensure retry button is wired
     resTimeSpan = document.getElementById('res-time');
     resWpmSpan = document.getElementById('res-wpm');
 
@@ -246,8 +293,11 @@
     if(resLevelInit && difficultySelect) resLevelInit.textContent = (difficultySelect.value || 'easy').replace(/^\w/, c => c.toUpperCase());
     if(resWpmSpan) resWpmSpan.textContent = '0';
 
-    // attach named handlers
-    // Keep retry button as-is (if present) — start/stop are handled by typing and Enter.
+    // attach retry handler and set initial retry state
+    if(retryBtn){
+      retryBtn.addEventListener('click', retryTest);
+      retryBtn.disabled = false; // enabled so user can request a new sample before starting
+    }
   });
 
 })();
