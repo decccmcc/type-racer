@@ -46,7 +46,27 @@
 
   // --- Timing logic: named functions for clarity ---
   let startBtn, stopBtn, resTimeSpan;
+  let resWpmSpan;
   let testStartTimestamp = null;
+
+  // Calculate WPM based on positional word matches (uses promptBox and typingArea)
+  function calculateWPM(timeTaken){
+    // timeTaken is in seconds
+    const sampleText = (promptBox ? promptBox.textContent : '').trim();
+    const userText = (typingArea ? typingArea.value : '').trim();
+
+    if(!timeTaken || timeTaken <= 0) return 0;
+
+    const sampleWords = sampleText ? sampleText.split(/\s+/) : [];
+    const userWords = userText ? userText.split(/\s+/) : [];
+
+    let correctWords = 0;
+    for(let i = 0; i < userWords.length; i++){
+      if(userWords[i] === sampleWords[i]) correctWords++;
+    }
+
+    return Math.round((correctWords / timeTaken) * 60);
+  }
 
   function startTest(){
     // record high-resolution start time
@@ -64,6 +84,11 @@
     if(stopBtn) stopBtn.disabled = false;
     // clear previous result time display while test is running
     if(resTimeSpan) resTimeSpan.textContent = '0s';
+    // clear WPM display while running
+    if(resWpmSpan) resWpmSpan.textContent = '0';
+    // update displayed level in results to current difficulty
+    const resLevel = document.getElementById('res-level');
+    if(resLevel && difficultySelect) resLevel.textContent = (difficultySelect.value || 'easy').replace(/^\w/, c => c.toUpperCase());
   }
 
   function stopTest(){
@@ -71,6 +96,14 @@
     const elapsedMs = performance.now() - testStartTimestamp;
     const seconds = +(elapsedMs / 1000).toFixed(2);
     if(resTimeSpan) resTimeSpan.textContent = seconds + 's';
+
+    // Calculate WPM by comparing user words to sample words positionally
+    const wpm = calculateWPM(seconds);
+    if(resWpmSpan) resWpmSpan.textContent = String(wpm);
+
+    // ensure results show selected difficulty
+    const resLevel = document.getElementById('res-level');
+    if(resLevel && difficultySelect) resLevel.textContent = (difficultySelect.value || 'easy').replace(/^\w/, c => c.toUpperCase());
 
     // Disable typing area once test ends
     if(typingArea){
@@ -85,7 +118,7 @@
     testStartTimestamp = null;
   }
   // --- end timing logic ---
-
+  
   // Initialize on DOM ready
   document.addEventListener('DOMContentLoaded', function(){
     // Initial pick based on current select value
@@ -108,6 +141,7 @@
     startBtn = document.getElementById('start-btn');
     stopBtn = document.getElementById('stop-btn');
     resTimeSpan = document.getElementById('res-time');
+    resWpmSpan = document.getElementById('res-wpm');
 
     // initial button states: start enabled, stop disabled
     if(startBtn) startBtn.disabled = false;
@@ -115,6 +149,11 @@
 
     // Ensure typing area is disabled until test starts
     if(typingArea) typingArea.disabled = true;
+
+    // ensure results initial values match UI
+    const resLevelInit = document.getElementById('res-level');
+    if(resLevelInit && difficultySelect) resLevelInit.textContent = (difficultySelect.value || 'easy').replace(/^\w/, c => c.toUpperCase());
+    if(resWpmSpan) resWpmSpan.textContent = '0';
 
     // attach named handlers
     if(startBtn) startBtn.addEventListener('click', startTest);
