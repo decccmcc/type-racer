@@ -25,6 +25,62 @@
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
+  // Current sample words for live comparison
+  let currentSampleWords = [];
+
+  // Render prompt text as individual word <span> elements
+  function renderPromptAsSpans(text){
+    currentSampleWords = text ? text.trim().split(/\s+/) : [];
+    if(!promptBox) return;
+    promptBox.innerHTML = '';
+    currentSampleWords.forEach(function(word, idx){
+      const span = document.createElement('span');
+      span.textContent = word;
+      span.dataset.index = String(idx);
+      span.className = 'prompt-word';
+      // reset any inline color
+      span.style.color = '';
+      promptBox.appendChild(span);
+      // preserve spaces between words
+      promptBox.appendChild(document.createTextNode(' '));
+    });
+  }
+
+  // Normalize a token by stripping leading/trailing punctuation and lowercasing
+  function normalizeWord(token){
+    try {
+      return (token || '').replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '').toLowerCase();
+    } catch (e) {
+      // Fallback if \p Unicode property escapes unsupported
+      return (token || '').replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '').toLowerCase();
+    }
+  }
+
+  // Update colors of prompt-word spans based on current user input
+  function updateWordColors(){
+    if(!promptBox || !typingArea) return;
+    const userText = typingArea.value.trim();
+    const userWords = userText ? userText.split(/\s+/) : [];
+
+    for(let i = 0; i < currentSampleWords.length; i++){
+      const span = promptBox.querySelector('span[data-index="' + i + '"]');
+      if(!span) continue;
+      const sampleNorm = normalizeWord(currentSampleWords[i]);
+      const userNorm = normalizeWord(userWords[i] || '');
+
+      if(!userWords[i]) {
+        // not typed yet -> default color
+        span.style.color = '';
+      } else if(userNorm === sampleNorm){
+        // correct word
+        span.style.color = 'blue';
+      } else {
+        // incorrect word
+        span.style.color = 'red';
+      }
+    }
+  }
+
   // Get DOM elements
   const difficultySelect = document.getElementById('difficulty');
   const promptBox = document.getElementById('prompt-box');
@@ -35,15 +91,16 @@
     const key = (difficulty || '').toLowerCase();
     const bucket = samples[key] || samples.easy;
     const text = randomFrom(bucket);
-    if(promptBox){
-      promptBox.textContent = text;
-    }
+    // Render the prompt as word spans so we can colour individual words
+    renderPromptAsSpans(text);
     // Clear typing area when a new prompt is chosen
     if(typingArea){
       typingArea.value = '';
+      // ensure colours are reset when prompt changes
+      updateWordColors();
     }
   }
-
+  
   // --- Timing logic: named functions for clarity ---
   let startBtn, stopBtn, resTimeSpan;
   let resWpmSpan;
@@ -77,6 +134,8 @@
       typingArea.value = '';       // clear any existing text
       typingArea.disabled = false; // enable while running
       typingArea.focus();
+      // Reset live colouring when a test starts
+      updateWordColors();
     }
 
     // UI state: disable start, enable stop
@@ -121,6 +180,9 @@
   
   // Initialize on DOM ready
   document.addEventListener('DOMContentLoaded', function(){
+    // Live update as the user types
+    if(typingArea) typingArea.addEventListener('input', updateWordColors);
+
     // Initial pick based on current select value
     if(difficultySelect){
       chooseAndDisplay(difficultySelect.value || 'easy');
